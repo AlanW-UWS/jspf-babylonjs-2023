@@ -66,6 +66,29 @@ import {
     return box;
   }
 
+  function createTorus(scene: Scene, px: number, py: number, pz: number) {
+    const torus = MeshBuilder.CreateTorus("torus", {});
+    torus.position = new Vector3(px, py, pz);
+    scene.registerAfterRender(function () {
+      torus.rotate(new Vector3(4, 8, 2)/*axis*/, 0.02/*angle*/, Space.LOCAL);
+    });
+    return torus;
+  }
+
+  // function createTube(scene: Scene, px: number, py: number, pz: number) {
+  //   const makeCurve = (range, nbSteps) => {
+  //     const path = [];
+  //     const stepSize = range / nbSteps;
+  //     for (let i = -range / 2; i < range / 2; i += stepSize ) {
+  //     path.push( new Vector3(5 * Math.sin(i * nbSteps / 400), i, 5 * Math.cos(i * nbSteps / 400)) );
+  //     }
+  //     return path;
+  // };
+
+  //   const curve = makeCurve(40, 100);
+  //   const tube = MeshBuilder.CreateTube("tube", {path: curve, radius: 2, sideOrientation: Mesh.DOUBLESIDE}, scene);
+  // }
+
 
   function createAnyLight(scene: Scene, index: number, px: number, py: number, pz: number, colX: number, colY: number, colZ: number) {
     switch (index) {
@@ -144,22 +167,29 @@ import {
       light?: Light;
       spotlight?: SpotLight;
       sphere?: Mesh;
+      torus?: Mesh;
       ground?: Mesh;
       camera?: Camera;
-      threeDText?: Text;
     }
   
     let that: SceneData = { scene: new Scene(engine) };
     that.scene.debugLayer.show();
   
     //createBox(scene, posX, posY, posZ, scalX, scalY, scalZ)
-    that.box = createBox(that.scene, -5, 2, 0, 3, 2, 1);
-    that.light = createAnyLight(that.scene, 2, -5, 5, 0, 0.39, 0.44, 0.91);
     //Scene Lighting
     //that.light = createAnyLight(that.scene, 1, 12, 3, 0, 0, 0, 0);
     //shape 1 and light
     that.faceBox = createFacedBox(that.scene, -10, 2, 0);
     that.light = createAnyLight(that.scene, 2, -10, 5, 0, 0.39, 0.44, 0.91);
+
+    //shape 2 and light
+    that.box = createBox(that.scene, -5, 2, 0, 3, 2, 1);
+    that.light = createAnyLight(that.scene, 2, -5, 5, 0, 0.39, 0.44, 0.91);
+
+    //shape 3 and light
+    that.torus = createTorus(that.scene, 0, 2, 0);
+    that.light = createAnyLight(that.scene, 2, 0, 5, 0, 0.39, 0.44, 0.91);
+
     //that.spotlight = createSpotLight(that.scene, 0, 6, 0);
     //that.sphere = createSphere(that.scene);
     that.ground = createGround(that.scene, 30, 10);
