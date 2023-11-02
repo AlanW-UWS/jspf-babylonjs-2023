@@ -121,7 +121,14 @@ import {
   function createHouse(scene: Scene) {
     const box = createBox(scene);
     const roof = createRoof(scene);
-    const house = Mesh.MergeMeshes([box, roof]);
+    const house: Mesh = Mesh.MergeMeshes([box, roof], true, false, undefined, false, true);
+
+    // for (let i = 0; i < 10; i++) {
+    //   const houseClone = new Mesh("house", house);
+    //   houseClone.position.x = Math.random() * (-30);
+    //   houseClone.position.z = Math.random() * 20 + 8;
+    //   houseClone.position.y = 0.5;
+    // }
     return house;
   }
 
@@ -213,9 +220,9 @@ import {
     that.trees = createTrees(that.scene);
 
     //housing
-    that.box = createBox(that.scene);
-    that.roof = createRoof(that.scene);
-    //that.house = createHouse(that.scene);
+    //that.box = createBox(that.scene);
+    //that.roof = createRoof(that.scene);
+    that.house = createHouse(that.scene); 
     //const house = Mesh.MergeMeshes([that.box, that.roof], true, false, undefined, false, true);
   
     //Scene Lighting & Camera
