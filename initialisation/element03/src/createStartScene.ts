@@ -35,7 +35,7 @@ import {
   //MIDDLE OF CODE - FUNCTIONS
   let keyDownMap: any[] = [];
 
-  function importPlayerMesh(scene, x: number, y: number) {
+  function importPlayerMesh(scene: Scene, x: number, y: number) {
     let tempItem = { flag: false } 
     let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
       let mesh = newMeshes[0];
@@ -85,7 +85,7 @@ import {
           animating = false;
           scene.stopAnimation(skeleton);
         } 
-        
+
       });
     });
     return item;
