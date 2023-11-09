@@ -34,6 +34,9 @@ import {
   //----------------------------------------------------
   //MIDDLE OF CODE - FUNCTIONS
   let keyDownMap: any[] = [];
+  let currentSpeed: number = 0.1;
+  let walkingSpeed: number = 0.1;
+  let runningSpeed: number = 0.4;
 
   function importPlayerMesh(scene: Scene, x: number, y: number) {
     let tempItem = { flag: false } 
@@ -55,6 +58,7 @@ import {
 
       scene.onBeforeRenderObservable.add(()=> {
         let keydown: boolean = false;
+        let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
           mesh.position.z += 0.1;
           mesh.rotation.y = 0;
@@ -74,6 +78,13 @@ import {
           mesh.position.x += 0.1;
           mesh.rotation.y = Math.PI / 2;
           keydown = true;
+        }
+        if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
+          currentSpeed = runningSpeed;
+          shiftdown = true;
+        } else {
+          currentSpeed = walkingSpeed;
+          shiftdown = false;
         }
 
         if (keydown) {
