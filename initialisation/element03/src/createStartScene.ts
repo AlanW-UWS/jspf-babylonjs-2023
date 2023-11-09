@@ -95,8 +95,7 @@ import {
         } else {
           animating = false;
           scene.stopAnimation(skeleton);
-        } 
-
+        }
       });
     });
     return item;
