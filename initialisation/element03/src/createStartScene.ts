@@ -29,18 +29,32 @@ import {
     ExecuteCodeAction,
     AnimationPropertiesOverride,
   } from "@babylonjs/core";
+  import HavokPhysics from "@babylonjs/havok";
+  import { HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
   //----------------------------------------------------
   
   //----------------------------------------------------
+  //Initialisation of Physics (Havok)
+  let initializedHavok;
+  HavokPhysics().then((havok) => {
+    initializedHavok = havok;
+  });
+
+  const havokInstance = await HavokPhysics();
+  const havokPlugin = new HavokPlugin(true, havokInstance);
+
+  globalThis.HK = await HavokPhysics();
+  //-----------------------------------------------------
+
   //MIDDLE OF CODE - FUNCTIONS
   let keyDownMap: any[] = [];
   let currentSpeed: number = 0.1;
   let walkingSpeed: number = 0.1;
   let runningSpeed: number = 0.4;
 
-  function importPlayerMesh(scene: Scene, x: number, y: number) {
+  function importPlayerMesh(scene: Scene, collider: Mesh, x: number, y: number) {
     let tempItem = { flag: false } 
-    let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
+    let item: any = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
       let mesh = newMeshes[0];
       let skeleton = skeletons[0];
       skeleton.animationPropertiesOverride = new AnimationPropertiesOverride();
@@ -96,7 +110,18 @@ import {
           animating = false;
           scene.stopAnimation(skeleton);
         }
+
+        //collision
+        if (mesh.intersectsMesh(collider)) {
+          console.log("COLLIDED");
+        }
       });
+
+      //physics collision
+      item = mesh;
+      let playerAggregate = new PhysicsAggregate(item, PhysicsShapeType.CAPSULE, { mass: 0 }, scene);
+      playerAggregate.body.disablePreStep = false;
+
     });
     return item;
   }
@@ -124,9 +149,18 @@ import {
     return scene.actionManager;
   } 
 
-  //Create more detailed ground
+  function createBox(scene: Scene, x: number, y: number, z: number) {
+    let box: Mesh = MeshBuilder.CreateBox("box", { });
+    box.position.x = x;
+    box.position.y = y;
+    box.position.z = z;
+    const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 1 }, scene);
+    return box;
+  }
+    
   function createGround(scene: Scene) {
-    const ground = MeshBuilder.CreateGround("ground", {height: 10, width: 10, subdivisions: 4});
+    const ground: Mesh = MeshBuilder.CreateGround("ground", {height: 10, width: 10, subdivisions: 4});
+    const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
     return ground;
   }
 
@@ -211,6 +245,7 @@ import {
   export default function createStartScene(engine: Engine) {
     interface SceneData {
       scene: Scene;
+      box?: Mesh;
       ground?: Mesh;
       importMesh?: any;
       actionManager?: any;
@@ -222,15 +257,17 @@ import {
   
     let that: SceneData = { scene: new Scene(engine) };
     that.scene.debugLayer.show();
+    //initialise physics
+    that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
+    //----------------------------------------------------------
 
     //any further code goes here-----------
-    that.importMesh = importPlayerMesh(that.scene, 0, 0);
+    that.box = createBox(that.scene, 2, 2, 2);
+    that.ground = createGround(that.scene);
+
+    that.importMesh = importPlayerMesh(that.scene, that.box, 0, 0);
     that.actionManager = actionManager(that.scene);
 
-
-
-    //-------------------------------------
-    that.ground = createGround(that.scene);
     that.skybox = createSkybox(that.scene);
     //Scene Lighting & Camera
     that.hemisphericLight = createHemiLight(that.scene);
