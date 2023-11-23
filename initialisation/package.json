@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "element01build": "tsc && vite build element01",
+    "element01preview": "vite preview element01",
+    "element02build": "tsc && vite build element02",
+    "element02preview": "vite preview element02"
   },
   "devDependencies": {
     "typescript": "^5.0.2",
