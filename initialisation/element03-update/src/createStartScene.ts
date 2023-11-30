@@ -116,23 +116,27 @@ import {
           keydown = true;
         }
 
-        if (keydown) {
+        let isPlaying: boolean = false;
+        if (keydown && !isPlaying) {
           if (!animating) {
-              animating = true;
               idleAnim = scene.stopAnimation(skeleton);
               walkAnim = scene.beginWeightedAnimation(skeleton, walkRange.from, walkRange.to, 1.0, true);
+              animating = true;
           }
           if (animating) {
-            walkAnim = scene.beginWeightedAnimation(skeleton, walkRange.from, walkRange.to, 1.0, true);
+            //walkAnim = scene.beginWeightedAnimation(skeleton, walkRange.from, walkRange.to, 1.0, true);
+            isPlaying = true;
           }
         } else {
           if (animating && !keydown) {
+            walkAnim = scene.stopAnimation(skeleton);
+            idleAnim = scene.beginWeightedAnimation(skeleton, idleRange.from, idleRange.to, 1.0, true);
             animating = false;
-            idleAnim = scene.beginWeightedAnimation(skeleton, idleRange.from, idleRange.to, 1.0, true);
+            isPlaying = false;
           }
-          if (!animating && !keydown) {
-            idleAnim = scene.beginWeightedAnimation(skeleton, idleRange.from, idleRange.to, 1.0, true);
-          }
+          // if (!animating && !keydown) {
+          //   idleAnim = scene.beginWeightedAnimation(skeleton, idleRange.from, idleRange.to, 1.0, true);
+          // }
         }
 
         //collision
